@@ -35,7 +35,28 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/learn_CI_CD:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/learn_ci_cd:latest
 
     - name: Log out from Docker Hub
       run: docker logout
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Add SSH key
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to local machine
+      run: |
+        ssh -o StrictHostKeyChecking=no user@your.local.machine.ip << 'EOF'
+          docker pull ${{ secrets.DOCKER_USERNAME }}/learn_ci_cd:latest
+          docker stop learn_ci_cd || true
+          docker rm learn_ci_cd || true
+          docker run -d --name learn_ci_cd -p 8093:8093 ${{ secrets.DOCKER_USERNAME }}/learn_ci_cd:latest
+        EOF
