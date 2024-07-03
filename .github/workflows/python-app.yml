@@ -54,7 +54,7 @@ jobs:
 
     - name: Deploy to local machine
       run: |
-        ssh -o StrictHostKeyChecking=no user@your.local.machine.ip << 'EOF'
+        ssh -o StrictHostKeyChecking=no chuongphung@192.168.68.136 << 'EOF'
           docker pull ${{ secrets.DOCKER_USERNAME }}/learn_ci_cd:latest
           docker stop learn_ci_cd || true
           docker rm learn_ci_cd || true
